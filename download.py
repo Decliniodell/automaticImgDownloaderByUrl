@@ -219,7 +219,7 @@ button.pack()
 
 
 
-statusLabel = Label(window, text = "Downloading... page 1", bd = 1, relief = SUNKEN, anchor = W)
+statusLabel = Label(window, text = "Nothing...", bd = 1, relief = SUNKEN, anchor = W)
 statusLabel.pack(side = "bottom", fill = "x")
 
 # window.config(menu = menuBar)
