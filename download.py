@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 window = Tk()
 window.title("Automatic Img Downloader by Url")
-window.iconbitmap("icon.ico")
+window.iconbitmap("imgs/icon.ico")
 window.minsize(320, 240)
 window.maxsize(640, 480)
 
@@ -219,7 +219,7 @@ button.pack()
 
 
 
-statusLabel = Label(window, text = "Nothing...", bd = 1, relief = SUNKEN, anchor = W)
+statusLabel = Label(window, text = "Downloading... page 1", bd = 1, relief = SUNKEN, anchor = W)
 statusLabel.pack(side = "bottom", fill = "x")
 
 # window.config(menu = menuBar)
