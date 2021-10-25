@@ -18,7 +18,7 @@ This project was made with the intention of downloading a large number of images
 2. Enter url, select directory to save, enter manga name (optional) and chapter.
 
     <p align="center">
-        <img src="imgs/screen1.png" width="200" alt="Screen1"/>
+        <img src="imgs/screen1.PNG" width="200" alt="Screen1"/>
     </p>
 
 3. Click on the download button and enjoy.
@@ -28,10 +28,10 @@ This project was made with the intention of downloading a large number of images
 The download status field informs how many pages have been downloaded and how many still need to download.
 
 - <p align="center">
-    <img src="imgs/screen2.png" width="300" alt="Screen2"/>
+    <img src="imgs/screen2.PNG" width="300" alt="Screen2"/>
 </p>
 
 
 - <p align="center">
-    <img src="imgs/screen2_5.png" width="300" alt="Screen2_5"/>
+    <img src="imgs/screen2_5.PNG" width="300" alt="Screen2_5"/>
 </p>
