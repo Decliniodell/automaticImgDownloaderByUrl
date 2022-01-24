@@ -1,7 +1,8 @@
 import os, re, requests
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from bs4 import BeautifulSoup
+from threading import Thread
 
 window = Tk()
 window.title("Automatic Img Downloader by Url")
@@ -26,7 +27,7 @@ def onlyNums(char):
     return bool(re.match("[0-9]", char))
 numValidation = window.register(onlyNums)
 
-
+# Checks if each field is filled
 def fieldsVerification():
     error = False
 
@@ -78,7 +79,7 @@ def fieldsVerification():
         fieldChp.config(bg="white")
 
 
-    return False if error else download()
+    return False if error else Thread(target = download).start()
 
 
 def download():
@@ -109,34 +110,66 @@ def download():
     if not os.path.isdir(filesDir):
         os.makedirs(filesDir)
 
+    # Set the values ​​to empty
+    url.set("")
+    name.set("")
+    chapter.set("")
+    selectedDir.set("/")
+
+
+    # Creates a status frame for download progress
+    statusFrame = Frame(window,  bd = 1, relief = SUNKEN)
+    statusFrame.pack(fill = "x")
+    statusFrame.grid_columnconfigure(1, weight=1)
+
+    statusLabel = Label(statusFrame, text = "Loading...")
+    statusLabel.grid(row=0, column=0)
+
+    statusBar = ttk.Progressbar(statusFrame, maximum=50)
+    statusBar.grid(row=0, column=1)
+
+
     # If there is an image in the url, download and check how many there are
     if imageNums and imageExt:
-        quantityImages = 0
+        imageQuant = int(imageNums)
+
+        # Number of image previews
+        attempts = 5
+
+
+        statusLabel["text"] = "Downloading... Chp:%s" %(chapterNumber)
+        statusBar["mode"] = "indeterminate"
+        statusBar.start()
+
 
         while True:
 
             # Increments the numbers according to the size of the image name (00 or 000) 01, 02, 03 ....
-            if len(imageNums) == 2:
-                urlTemp = urlSite + "%s%s.%s" %(("0" if quantityImages < 10 else ""), quantityImages, imageExt)
+            if len(imageNums) == 1 :
+                urlNums = imageQuant
+            elif len(imageNums) == 2 :
+                urlNums = "0" if imageQuant < 10 else "", imageQuant
+            elif len(imageNums) == 3 :
+                urlNums = "%s%s%s" %("00" if imageQuant < 10 else "0" if imageQuant < 100 else "", "0" if imageQuant < 100 else "", imageQuant)
 
-            elif len(imageNums) == 3:
+            urlTemp = urlSite + "%s.%s" %(urlNums, imageExt)
 
-                urlTemp = urlSite + "%s%s.%s" %(("00" if quantityImages < 10 else "0" if quantityImages < 100 else ""), quantityImages, imageExt)
-            
             file = requests.get(urlTemp, headers = {"User-Agent": ""})
 
             if file.status_code == 200 :
-                statusLabel["text"] = "Downloading... page %s" %(quantityImages)
-                window.update()
+                statusLabel["text"] = "Downloading... Chp: %s Page: %s" %(chapterNumber, imageQuant)
 
                 fileDir = filesDir + "/" + urlTemp.split('/')[-1]
 
                 with open(fileDir, 'wb') as f:
                     f.write(file.content)
                     f.close()
-                quantityImages += 1
+                imageQuant += 1
             else :
-                break
+                if attempts == 0 : break
+                imageQuant += 1
+                attempts -= 1
+
     # If there is no image in the url, check the url response for image links
     else :
         response = requests.get(urlSite, headers = {"User-Agent": ""})
@@ -145,8 +178,7 @@ def download():
 
         for index, link in enumerate(links) :
 
-            statusLabel["text"] = "Downloading... %s of %s" %(str(index + 1), str(len(links)))
-            window.update()
+            statusLabel["text"] = "Downloading... Chp: %s Pages: %s of %s" %(chapterNumber, str(index + 1), str(len(links)))
 
             fileDir = filesDir + "/" + link.split('/')[-1]
 
@@ -156,8 +188,15 @@ def download():
                 f.write(file.content)
                 f.close()
 
-    statusLabel["text"] = "Finished Chapter %s" %chapterNumber
-    messagebox.showinfo("Alert", "Finished")
+    statusBar["mode"] = "determinate"
+    statusBar.stop()
+    statusBar["value"] = 50
+    statusLabel["text"] = "Finished Chp: %s" %chapterNumber
+
+    buttonBar = Button(statusFrame, width = 10, text = "X", command = statusFrame.destroy)
+    buttonBar.grid(row=0, column=2)
+
+    messagebox.showinfo("Alert", "Finished Chapter %s" %chapterNumber)
 
 
 # menuBar = Menu(window)
@@ -219,8 +258,8 @@ button.pack()
 
 
 
-statusLabel = Label(window, text = "Nothing...", bd = 1, relief = SUNKEN, anchor = W)
-statusLabel.pack(side = "bottom", fill = "x")
+# statusLabel = Label(window, text = "Nothing...", bd = 1, relief = SUNKEN, anchor = W)
+# statusLabel.pack(side = "bottom", fill = "x")
 
 # window.config(menu = menuBar)
 window.mainloop()
