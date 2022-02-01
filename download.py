@@ -148,7 +148,7 @@ def download():
             if len(imageNums) == 1 :
                 urlNums = imageQuant
             elif len(imageNums) == 2 :
-                urlNums = "0" if imageQuant < 10 else "", imageQuant
+                urlNums = "%s%s" %("0" if imageQuant < 10 else "", imageQuant)
             elif len(imageNums) == 3 :
                 urlNums = "%s%s%s" %("00" if imageQuant < 10 else "0" if imageQuant < 100 else "", "0" if imageQuant < 100 else "", imageQuant)
 
